@@ -9,10 +9,10 @@ This is a Flutter-based chatbot application designed to help visually impaired u
 
  *  **Voice Interaction:** Speak to the chatbot and listen to its responses.
  * **Text-to-Speech Settings:** Users can customize TTS options, including:<br>
-       * **Speech Rate:** Adjust the speed of speech output.<br>
-       * **Pitch:** Change the tone of the voice.<br>
-       * **Language Selection:** Choose from various English accents (e.g., US, UK, Canada, Australia, India).<br>
-       * **Voice Options:** Select different voices for TTS playback.<br>
+       - **Speech Rate:** Adjust the speed of speech output.<br>
+       - **Pitch:** Change the tone of the voice.<br>
+       - **Language Selection:** Choose from various English accents (e.g., US, UK, Canada, Australia, India).<br>
+       - **Voice Options:** Select different voices for TTS playback.<br>
  *  **Playback Controls:** Play, pause, and repeat spoken messages.<br>
  *  **File Handling:**  Upload and extract text from PDF, DOCX, and PPTX files.
  *  **Customizable Voices:** Choose from available text-to-speech voices.
