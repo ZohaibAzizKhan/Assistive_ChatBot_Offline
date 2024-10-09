@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:dash_chat_2/dash_chat_2.dart';
@@ -369,5 +370,11 @@ class ChatProvider extends ChangeNotifier {
     );
     questionController.clear();
     onSend(userMessage);
+  }
+  //Function to copy messages to ClipBoard
+  void copyMessage(String message){
+    Clipboard.setData(ClipboardData(text: message)).then((_){
+      speak("Text copied to ClipBoard Successfully");
+    });
   }
 }
