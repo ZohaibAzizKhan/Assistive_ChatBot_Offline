@@ -1,5 +1,5 @@
 # vision_offline
-This is a Flutter-based chatbot application designed to help visually impaired users. The app integrates speech-to-text and text-to-speech functionalities, allowing users to interact with the chatbot using voice commands. Key features include:
+This is a Flutter-based chatbot application designed to help visually impaired users. The app integrates speech-to-text and text-to-speech functionalities, allowing users to interact with the gemma lightweight model running on mobile device through chatbot using voice commands. Key features include:
  *  **Gemini Lightweight AI Integration:**  Utilizes the Gemini lightweight on device model to provide intelligent responses.<br>
  *  **Speech-to-Text:**   Users can long-press the screen to speak their queries, which will be converted to text and sent to the chatbot.<br>
  *  **Text-to-Speech:**    All chatbot responses are spoken aloud to assist users.<br> 
