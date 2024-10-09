@@ -20,7 +20,7 @@ class ChatScreen extends StatelessWidget {
       body: const ChatPage(),
     );
   }
-
+// Function to build the Drawer with settings option
   Drawer _buildDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
@@ -30,6 +30,7 @@ class ChatScreen extends StatelessWidget {
             decoration: BoxDecoration(color: Colors.blue),
             child: Text('Settings', style: TextStyle(color: Colors.white, fontSize: 24)),
           ),
+          // ListTile for accessing TTS settings
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('TTS Settings'),
@@ -42,7 +43,8 @@ class ChatScreen extends StatelessWidget {
       ),
     );
   }
-
+  // Function to show the TTS settings dialog allowing the user to
+  // adjust speech rate, pitch, and language
   void _showSettingsDialog(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     showDialog(
@@ -56,6 +58,7 @@ class ChatScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('Speech Rate: ${chatProvider.speechRate.toStringAsFixed(2)}'),
+                  // Slider to adjust speech rate for TTS
                   Slider(
                     value: chatProvider.speechRate,
                     min: 0.0,
@@ -69,6 +72,7 @@ class ChatScreen extends StatelessWidget {
                     },
                   ),
                   Text('Pitch: ${chatProvider.speechPitch.toStringAsFixed(2)}'),
+                  // Slider to adjust Pitch for TTS
                   Slider(
                     value: chatProvider.speechPitch,
                     min: 0.5,
@@ -83,6 +87,7 @@ class ChatScreen extends StatelessWidget {
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
+                    // Dropdown for selecting TTS language Accent
                     child: DropdownButton<String>(
                       value: chatProvider.language,
                       items: const [
@@ -118,6 +123,7 @@ class ChatScreen extends StatelessWidget {
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
+                    // Dropdown for selecting the voice for TTS
                     child: DropdownButton(
                       value: chatProvider.selectedVoice,
                       items: chatProvider.voiceItems,
@@ -155,13 +161,13 @@ class ChatScreen extends StatelessWidget {
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
-
+// Builds the chat page UI, displaying messages and input options
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
-    chatProvider.getVoices(); // Ensure this is called to load voices.
-
+    chatProvider.getVoices();
     return GestureDetector(
+      // Handles long-press actions to start/stop speech-to-text listening
       onLongPressStart: (_) => chatProvider.startListening(),
       onLongPressEnd: (_) => chatProvider.stopListening(),
       child: SafeArea(

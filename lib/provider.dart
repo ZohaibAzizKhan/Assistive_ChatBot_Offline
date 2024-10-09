@@ -8,33 +8,50 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+// The ChatProvider class manages the chat functionality, including speech-to-text, text-to-speech, file handling, and communicating with flutter_gemma.
 class ChatProvider extends ChangeNotifier {
+  //Instance of flutterGemma for interaction with gemma
   final flutterGemma = FlutterGemmaPlugin.instance;
+  //Instance of TextEditing controller for capturing user input text
   TextEditingController questionController=TextEditingController();
+  //Store the gemma reposes
   String? geminiResponse;
+  //To keep track of chats between user and gemma
   final List<Message> conversationHistory=[];
+  //Instance of FlutterTts for text_to_Speech functionality
   FlutterTts flutterTts=FlutterTts();
+  // Speech-to-text instance for handling voice input
   stt.SpeechToText speechToText = stt.SpeechToText();
+  // Define chat users (current user and Gemini)
   ChatUser currentUser = ChatUser(id: '0', firstName: 'user');
-  ChatUser geminiUser = ChatUser(id: '1', firstName: 'gemini',);
+  ChatUser gemmaUser = ChatUser(id: '1', firstName: 'gemma',);
+  // List to store chat messages
   List<ChatMessage> messages = [];
+  // Default speech settings
   double speechRate = 0.5;
   double speechPitch = 1.0;
   String language = "en-US";
+  // Flags to track if the app is listening or speaking
   String? lastSpokenText;
   bool isListening=false;
   bool _isSpeaking = false;
   bool get isSpeaking => _isSpeaking;
-  bool _isPaused = false; // Add a state variable to track pausing
+  // State variable to track if the speech is paused
+  bool _isPaused = false;
   bool get isPaused => _isPaused;
+  // Available voice options for text-to-speech
   List<DropdownMenuItem<Map<String, String>>> voiceItems = [];
   Map<String, String>? selectedVoice;
+  // List to keep track of users currently typing
   List<ChatUser>  typingUser=[];
+  // Constructor initializes the chatbot, TTS settings, and gets available voices
   ChatProvider() {
     initializeChatbot();
     getVoices();
     flutterTts=FlutterTts();
   }
+  // Initializes the Gemini model by setting parameters like max tokens and temperature
+  //Defualt max tokens is 512
   Future<void> initializeChatbot() async {
     await flutterGemma.init(
       maxTokens: 1024,
@@ -44,37 +61,36 @@ class ChatProvider extends ChangeNotifier {
     );
     notifyListeners();
   }
+  // Adds a user to the list of typing users
   void addUserTyping(String userId, String username) {
     typingUser.add(ChatUser(id: userId, firstName: username));
     notifyListeners();
   }
-
+// Removes a user from the typing list
   void removeUserTyping(String userId) {
     typingUser.removeWhere((user) => user.id == userId);
     notifyListeners();
   }
+// Sets the speech settings (rate, pitch, language) for TTS
   Future<void> settings()async{
-
     await flutterTts.setSpeechRate(speechRate);
     await flutterTts.setPitch(speechPitch);
     await flutterTts.setLanguage(language);
-
   }
+  // Fetches the available voices from FlutterTTS and stores them in a dropdown menu
   Future<void> getVoices() async {
     List<dynamic>? voices = await flutterTts.getVoices;
-
     voiceItems = voices!.map((voice) {
       return DropdownMenuItem<Map<String, String>>(
         value: {"name": voice['name'], "locale": voice['locale']},
         child: Text("${voice['name']} (${voice['locale']})"),
       );
     }).toList();
-
     // Set the default voice (optional)
     selectedVoice = voiceItems.first.value;
     notifyListeners();
   }
-
+// Sets the TTS voice based on user selection
   Future<void> setVoice(Map<String, String>? voice) async {
     await flutterTts.setVoice({
       'name': voice!["name"]!,
@@ -84,45 +100,45 @@ class ChatProvider extends ChangeNotifier {
     speak("you select $selectedVoice voice");
     notifyListeners();
   }
-
+// Plays the Gemini response using text-to-speech
   Future<void> play() async {
     _isSpeaking = true;
     _isPaused = false;
-    notifyListeners(); // Notify *before* starting to speak
+    notifyListeners();
     await flutterTts.setVoice(selectedVoice!);
     await flutterTts.speak(geminiResponse!);
   }
-
+// Speaks the given text using TTS
   Future<void> speak(String text) async {
     _isSpeaking = true;
     _isPaused = false;
-    notifyListeners(); // Notify *before* starting to speak
+    notifyListeners();
     await flutterTts.speak(text);
   }
-
+// Stops the TTS and resets the speaking/paused flags
   Future<void> stop() async {
     await flutterTts.stop();
     _isSpeaking = false;
     _isPaused = false;
     notifyListeners();
   }
-
+// Repeats the last spoken text using TTS
   Future<void> repeatSpeak() async {
     if (lastSpokenText != null && lastSpokenText!.isNotEmpty) {
-      await stop();  // Stop before repeating
+      await stop();
       await speak(lastSpokenText!);
     }
   }
-
+// Pauses the TTS, only if it is currently speaking
   Future<void> pause() async {
-    if (_isSpeaking) { // Only pause if currently speaking
+    if (_isSpeaking) {
       _isSpeaking = false;
       _isPaused = true;
-      notifyListeners(); // Notify *before* pausing
+      notifyListeners();
       await flutterTts.pause();
     }
   }
-
+// Resumes the TTS if it was paused, or starts playing if not speaking
   Future<void> resume() async {
     if (_isPaused) {
       _isPaused = false;
@@ -134,6 +150,7 @@ class ChatProvider extends ChangeNotifier {
     }
 
   }
+  // Sends a user message, displaying it in the chat and generating a Gemini response
   Future<void> onSend(ChatMessage chatMessage) async {
     ChatMessage markDownMessage=ChatMessage(
       isMarkdown: true,
@@ -148,7 +165,7 @@ class ChatProvider extends ChangeNotifier {
       gemmaResponses(question);
 
   }
-
+  // Displays the extracted text content in the chat after processing a file
   Future<void> extractedContent(String extractedText) async {
     ChatMessage extractedMessage = ChatMessage(
         text: extractedText,
@@ -159,20 +176,21 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
       gemmaResponses(extractedText);
   }
+  // Generates a streaming response from Gemma based on the user's input
   Future<void> gemmaResponses(String userQuestion)async{
     String accumulatedResponse="";
-    addUserTyping(geminiUser.id, geminiUser.firstName!);
+    addUserTyping(gemmaUser.id, gemmaUser.firstName!);
     conversationHistory.add(Message(text: userQuestion,isUser: true));
     flutterGemma.getChatResponseAsync(messages: conversationHistory).listen((String? event){
       if(event!=null){
         accumulatedResponse +=event;
         ChatMessage? lastMessage=messages.firstOrNull;
-        if(lastMessage !=null && lastMessage.user==geminiUser){
+        if(lastMessage !=null && lastMessage.user==gemmaUser){
            lastMessage.text=accumulatedResponse;
            messages[0]=lastMessage;
         }else{
           ChatMessage message=ChatMessage(
-              user: geminiUser,
+              user: gemmaUser,
               createdAt: DateTime.now(),
               isMarkdown: true,
             text: accumulatedResponse,
@@ -182,64 +200,14 @@ class ChatProvider extends ChangeNotifier {
         }
         notifyListeners();
       }if(event == null){
-        removeUserTyping(geminiUser.id);
+        removeUserTyping(gemmaUser.id);
       }
      });
     geminiResponse=accumulatedResponse;
     lastSpokenText=accumulatedResponse;
     play();
   }
-  // Future<void> gemmaResponses(String userQuestion) async {
-  //   // Add typing indicator for the Gemini user
-  //   addUserTyping(geminiUser.id, geminiUser.firstName!);
-  //
-  //   // Add user's question to the conversation history
-  //   conversationHistory.add(Message(text: userQuestion, isUser: true));
-  //
-  //   // Store the complete response
-  //   String? accumulatedResponse = "";
-  //
-  //   // Call the async method to get the chat response
-  //   try {
-  //     // Wait for the complete response
-  //     accumulatedResponse = await flutterGemma.getChatResponse(messages: conversationHistory);
-  //
-  //     // Remove typing indicator
-  //     removeUserTyping(geminiUser.id);
-  //
-  //     // Create a chat message with the accumulated response
-  //     ChatMessage message = ChatMessage(
-  //       text: accumulatedResponse!,
-  //       user: geminiUser,
-  //       createdAt: DateTime.now(),
-  //       isMarkdown: true,
-  //     );
-  //
-  //     // Add the message to the messages list
-  //     messages.add(message);
-  //
-  //     // Update the conversation history
-  //     conversationHistory.add(Message(text: accumulatedResponse, isUser: false));
-  //
-  //     // Store the final response for speaking
-  //     geminiResponse = accumulatedResponse;
-  //     lastSpokenText = accumulatedResponse;
-  //
-  //     // Play the final response
-  //     play();
-  //
-  //     // Notify listeners to update the UI
-  //     notifyListeners();
-  //
-  //   } catch (error) {
-  //     // Handle any errors that occur
-  //     removeUserTyping(geminiUser.id);
-  //     speak("There was an error during the conversation with Gemma: $error");
-  //   }
-  // }
-
-
-
+// Allows the user to pick a file from their device and process it
   Future<void> pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null && result.files.single.path != null) {
@@ -259,13 +227,11 @@ class ChatProvider extends ChangeNotifier {
       }
     }
   }
-
+// Sends the selected file to the server for text extraction and returns the extracted data
   Future<String> extractTextFromFile(File file, String extension) async {
     String apiUrl = '/upload'; // Replace with your Flask server URL
-
     var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
-
     try {
       var response = await request.send().timeout(const Duration(minutes: 3));
 
@@ -365,6 +331,7 @@ class ChatProvider extends ChangeNotifier {
     }
     return "Failed to Extract Data";
   }
+  // Starts listening for voice input and processes the recognized speech
   Future<void> startListening() async {
     bool available = await speechToText.initialize(
       onStatus: (val) {
@@ -375,6 +342,7 @@ class ChatProvider extends ChangeNotifier {
       onError: (val) => throw Exception('Speech to text error: $val'),
     );
     if (available) {
+      // If speech recognition is available, start listening
       isListening = true;
       notifyListeners();
       speechToText.listen(onResult: (val) {
@@ -385,7 +353,7 @@ class ChatProvider extends ChangeNotifier {
       throw Exception('Speech to text not available');
     }
   }
-
+   //stop listening when longTap is released
   Future<void> stopListening() async {
     await speechToText.stop();
     isListening = false;
