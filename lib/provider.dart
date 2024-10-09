@@ -371,7 +371,7 @@ class ChatProvider extends ChangeNotifier {
     questionController.clear();
     onSend(userMessage);
   }
-  //Function to copy messages to ClipBoard
+  //Copy Text to ClipBoard
   void copyMessage(String message){
     Clipboard.setData(ClipboardData(text: message)).then((_){
       speak("Text copied to ClipBoard Successfully");
