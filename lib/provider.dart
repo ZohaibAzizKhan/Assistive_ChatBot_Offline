@@ -176,7 +176,6 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
       gemmaResponses(extractedText);
   }
-  // Generates a streaming response from Gemma based on the user's input
   Future<void> gemmaResponses(String userQuestion)async{
     String accumulatedResponse="";
     addUserTyping(gemmaUser.id, gemmaUser.firstName!);
@@ -196,13 +195,13 @@ class ChatProvider extends ChangeNotifier {
             text: accumulatedResponse,
           );
           messages.insert(0, message);
-          conversationHistory.add(Message(text: accumulatedResponse,isUser: false));
         }
         notifyListeners();
       }if(event == null){
         removeUserTyping(gemmaUser.id);
       }
      });
+    conversationHistory.add(Message(text: accumulatedResponse,isUser: false));
     geminiResponse=accumulatedResponse;
     lastSpokenText=accumulatedResponse;
     play();
