@@ -198,14 +198,16 @@ class ChatProvider extends ChangeNotifier {
           messages.insert(0, message);
         }
         notifyListeners();
-      }if(event == null){
+      }
+      if(event == null){
         removeUserTyping(gemmaUser.id);
+        conversationHistory.add(Message(text: accumulatedResponse,isUser: false));
+        geminiResponse =accumulatedResponse;
+        lastSpokenText =accumulatedResponse;
+        play();
       }
      });
-    conversationHistory.add(Message(text: accumulatedResponse,isUser: false));
-    geminiResponse=accumulatedResponse;
-    lastSpokenText=accumulatedResponse;
-    play();
+
   }
 // Allows the user to pick a file from their device and process it
   Future<void> pickFile() async {
@@ -229,7 +231,7 @@ class ChatProvider extends ChangeNotifier {
   }
 // Sends the selected file to the server for text extraction and returns the extracted data
   Future<String> extractTextFromFile(File file, String extension) async {
-    String apiUrl = '/upload'; // Replace with your Flask server URL
+    String apiUrl = 'http://zohaibaziz977.pythonanywhere.com/upload'; // Replace with your Flask server URL
     var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
     try {
