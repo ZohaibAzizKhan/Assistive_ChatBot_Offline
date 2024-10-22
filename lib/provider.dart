@@ -16,7 +16,7 @@ class ChatProvider extends ChangeNotifier {
   //Instance of TextEditing controller for capturing user input text
   TextEditingController questionController=TextEditingController();
   //Store the gemma reposes
-  String? geminiResponse;
+  String geminiResponse='';
   //To keep track of chats between user and gemma
   final List<Message> conversationHistory=[];
   //Instance of FlutterTts for text_to_Speech functionality
@@ -45,7 +45,7 @@ class ChatProvider extends ChangeNotifier {
   Map<String, String>? selectedVoice;
   // List to keep track of users currently typing
   List<ChatUser>  typingUser=[];
-  // Constructor initializes the chatbot, TTS settings, and gets available voices
+
   ChatProvider() {
     initializeChatbot();
     getVoices();
@@ -107,7 +107,7 @@ class ChatProvider extends ChangeNotifier {
     _isPaused = false;
     notifyListeners();
     await flutterTts.setVoice(selectedVoice!);
-    await flutterTts.speak(geminiResponse!);
+    await flutterTts.speak(geminiResponse);
   }
 // Speaks the given text using TTS
   Future<void> speak(String text) async {
@@ -177,6 +177,7 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
       gemmaResponses(extractedText);
   }
+
   Future<void> gemmaResponses(String userQuestion)async{
     String accumulatedResponse="";
     addUserTyping(gemmaUser.id, gemmaUser.firstName!);
@@ -264,27 +265,23 @@ class ChatProvider extends ChangeNotifier {
             }
             return result.toString();
           }
-          else if(extension.toLowerCase()=="docx"){
+          else if (extension.toLowerCase() == "docx") {
             StringBuffer result = StringBuffer();
-            for (var pageData in extractedData) { //Iterate through pages
-              if (pageData.containsKey('headings') && pageData['headings'] is List) {
-                for (var headingData in pageData['headings']) {
-                  if (headingData.containsKey('chapter')) {
-                    result.writeln('Chapter ${headingData['chapter']}: ${headingData['heading']}');
+            for (var pageData in extractedData) {
+              result.writeln('Page: ${pageData['page_number']}'); // Write page number first
+              for (var headingData in pageData['headings']) {
+                if (headingData.containsKey('chapter')) {
+                  result.writeln('Chapter ${headingData['chapter']}: ${headingData['heading']}');
+                } else {
+                  result.writeln('Heading: ${headingData['heading']}');
+                }
+                for (var paragraph in headingData['paragraphs']) {
+                  if (paragraph['type'] == 'bullet') {
+                    result.writeln('  - ${paragraph['text']}');
                   } else {
-                    result.writeln('Heading: ${headingData['heading']}');
-                  }
-                  if (headingData.containsKey('paragraphs') && headingData['paragraphs'] is List) {
-                    for (var paragraph in headingData['paragraphs']) {
-                      if (paragraph['type'] == 'bullet') {
-                        result.writeln('  - ${paragraph['text']}');
-                      } else {
-                        result.writeln('  ${paragraph['text']}');
-                      }
-                    }
+                    result.writeln('  ${paragraph['text']}');
                   }
                 }
-                result.writeln('Page: ${pageData['page_number']}');
               }
             }
             return result.toString();
