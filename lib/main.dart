@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Edu Vison",
+      title: "Access Doc",
       theme: ThemeData.dark(),
       home: const ChatScreen(),
       debugShowCheckedModeBanner: false,

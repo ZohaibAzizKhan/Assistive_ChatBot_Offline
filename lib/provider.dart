@@ -191,7 +191,8 @@ class ChatProvider extends ChangeNotifier {
            messages[0]=lastMessage;
         }else{
           ChatMessage message=ChatMessage(
-              user: gemmajkDateTime.now(),
+              user: currentUser,
+              createdAt: DateTime.now(),
               isMarkdown: true,
             text: accumulatedResponse,
           );
