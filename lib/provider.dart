@@ -191,8 +191,7 @@ class ChatProvider extends ChangeNotifier {
            messages[0]=lastMessage;
         }else{
           ChatMessage message=ChatMessage(
-              user: gemmaUser,
-              createdAt: DateTime.now(),
+              user: gemmajkDateTime.now(),
               isMarkdown: true,
             text: accumulatedResponse,
           );
@@ -291,7 +290,8 @@ class ChatProvider extends ChangeNotifier {
             for (var pageData in extractedData) {
               result.writeln('Page ${pageData['page_number']}:');
               if (pageData['chapter'] != 0) { //Check if the chapter is available for the current page or not
-                result.writeln('Chapter ${pageData['chapter']}');
+                result.writeln(
+                    'Chapter ${pageData['chapter']}');
               }
 
               if (pageData.containsKey("headings") && pageData["headings"] is List) {

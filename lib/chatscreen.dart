@@ -1,5 +1,5 @@
 import 'package:dash_chat_2/dash_chat_2.dart';
-
+import 'package:flutter/semantics.dart'
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vision_offline/provider.dart';

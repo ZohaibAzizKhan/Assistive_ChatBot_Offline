@@ -59,18 +59,18 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/Icon/Edu_vision.png"
   min_sdk_android: 24 # android min sdk min:16, default 21
-  web:
-    generate: true
-    image_path: "assets/Icon/Edu_vision.png"
-    background_color: "#ffffff"
-    theme_color: "#007bff"
-  windows:
-    generate: true
-    image_path: "assets/Icon/Edu_vision.png"
-    icon_size: 48 # min:48, max:256, default: 48
-  macos:
-    generate: true
-    image_path: "assets/Icon/Edu_vision.png"
+#  web:
+#    generate: true
+#    image_path: "assets/Icon/Edu_vision.png"
+#    background_color: "#ffffff"
+#    theme_color: "#007bff"
+#  windows:
+#    generate: true
+#    image_path: "assets/Icon/Edu_vision.png"
+#    icon_size: 48 # min:48, max:256, default: 48
+#  macos:
+#    generate: true
+#    image_path: "assets/Icon/Edu_vision.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
