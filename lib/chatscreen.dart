@@ -276,6 +276,7 @@ class ChatPage extends StatelessWidget {
                           onPressed: () async {
                             if (chatProvider.isSpeaking && !chatProvider.isPaused) {
                               await chatProvider.pause();
+                              SemanticsService.announce("paused", TextDirection.ltr);
                             } else if (chatProvider.isPaused) {
                               await chatProvider.resume();
                             } else {
